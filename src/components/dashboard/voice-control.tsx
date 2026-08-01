@@ -1,5 +1,6 @@
 import {
   AudioWaveform,
+  LoaderCircle,
   Mic,
   MicOff,
   PhoneOff,
@@ -33,12 +34,58 @@ export function VoiceControl({
     status,
   );
 
+  const stateCopy: Record<VoiceAgentStatus, { title: string; detail: string }> =
+    {
+      idle: {
+        title: "Tap to start talking",
+        detail:
+          "Ask for competitor research, patterns, or your next video idea.",
+      },
+      connecting: {
+        title: "Opening a private session",
+        detail: "Creating a short-lived voice connection…",
+      },
+      listening: {
+        title: "I’m listening",
+        detail: "Speak naturally. Pause when you want me to respond.",
+      },
+      thinking: {
+        title: "Connecting the evidence",
+        detail: "Turning your request into a grounded research plan.",
+      },
+      working: {
+        title: "Research in progress",
+        detail: "Approved tools are gathering and validating sources.",
+      },
+      speaking: {
+        title: "Here’s what I found",
+        detail: "Interrupt at any time or continue in text below.",
+      },
+      error: {
+        title: "Voice needs attention",
+        detail: "Use the message above to fix the connection, then try again.",
+      },
+    };
+
+  const copy = stateCopy[status];
+
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative grid size-28 place-items-center sm:size-32">
+    <div className="flex w-full flex-col items-center gap-5 px-5 text-center">
+      <div className="relative grid size-48 place-items-center sm:size-56">
+        <span
+          className={cn(
+            "absolute inset-0 rounded-full bg-primary/10 shadow-inner",
+            isAnimating && "[animation:clay-breathe_2.4s_ease-in-out_infinite]",
+          )}
+          aria-hidden="true"
+        />
+        <span
+          className="absolute inset-5 rounded-full border border-card/80 bg-secondary/70 shadow-lg"
+          aria-hidden="true"
+        />
         {isAnimating && (
           <span
-            className="absolute inset-2 rounded-full border border-primary/35 [animation:status-ring_1.8s_ease-out_infinite]"
+            className="absolute inset-8 rounded-full border-2 border-primary/30 [animation:status-ring_1.8s_ease-out_infinite]"
             aria-hidden="true"
           />
         )}
@@ -46,9 +93,9 @@ export function VoiceControl({
           size="icon"
           onClick={isConnected ? onToggleMute : onConnect}
           className={cn(
-            "relative size-24 rounded-full shadow-xl transition-transform hover:scale-[1.03] sm:size-28",
-            status === "speaking" && "bg-sky-600 hover:bg-sky-600/90",
-            status === "listening" && "bg-emerald-600 hover:bg-emerald-600/90",
+            "relative size-32 rounded-full border-8 border-primary-foreground/20 shadow-2xl transition-[transform,box-shadow] duration-300 hover:scale-[1.025] hover:shadow-xl sm:size-36",
+            status === "error" && "bg-destructive hover:bg-destructive/90",
+            isMuted && "bg-muted-foreground hover:bg-muted-foreground/90",
           )}
           aria-label={
             !isConnected
@@ -58,12 +105,14 @@ export function VoiceControl({
                 : "Mute microphone"
           }
         >
-          {!isConnected ? (
-            <Mic className="size-9" />
+          {status === "connecting" ? (
+            <LoaderCircle className="size-11 animate-spin" />
+          ) : !isConnected ? (
+            <Mic className="size-11" />
           ) : isMuted ? (
             <MicOff className="size-9" />
           ) : status === "speaking" ? (
-            <AudioWaveform className="size-10" />
+            <AudioWaveform className="size-12" />
           ) : (
             <div className="flex h-10 items-center gap-1" aria-hidden="true">
               {[0, 1, 2, 3, 4].map((bar) => (
@@ -80,33 +129,42 @@ export function VoiceControl({
         </Button>
       </div>
 
-      <div className="text-center">
-        <p className="text-sm font-medium">
-          {!isConnected
-            ? "Start voice session"
-            : isMuted
-              ? "Microphone muted"
-              : status === "speaking"
-                ? "Agent is speaking"
-                : "Talk naturally"}
+      <div className="max-w-sm">
+        <p className="font-serif text-2xl font-semibold tracking-tight">
+          {isMuted ? "Microphone muted" : copy.title}
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Your standard API key never enters the browser.
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          {isMuted ? "Unmute when you’re ready to continue." : copy.detail}
         </p>
       </div>
 
       {isConnected && (
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={onInterrupt}>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onInterrupt}
+            className="shadow-xs"
+          >
             <Square className="size-3.5" />
             Stop speaking
           </Button>
-          <Button variant="ghost" size="sm" onClick={onDisconnect}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onDisconnect}
+            className="bg-card shadow-xs"
+          >
             <PhoneOff className="size-3.5" />
             End
           </Button>
         </div>
       )}
+
+      <p className="flex items-center gap-2 text-[11px] text-muted-foreground">
+        <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
+        Your standard API key stays on the server
+      </p>
     </div>
   );
 }

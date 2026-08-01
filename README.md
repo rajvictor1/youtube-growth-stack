@@ -117,17 +117,17 @@ For durable research, apply the Supabase migrations in timestamp order, authenti
 
 The following table covers every variable in [`.env.example`](.env.example):
 
-| Variable                        | Required for                          | Exposure and notes                                                                                                                            |
-| ------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OPENAI_API_KEY`                | Live voice sessions                   | Server-only standard API key used to mint short-lived Realtime client secrets.                                                                |
-| `YOUTUBE_API_KEY`               | Official YouTube metadata             | Server-only; the primary source for YouTube-native data.                                                                                      |
-| `APIFY_API_TOKEN`               | Optional YouTube enrichment           | Server-only; use only after explicit approval because runs may consume credits.                                                               |
-| `APIFY_ACTOR_ID`                | Optional Apify enrichment             | Server-only actor identifier. The example contains the supported default actor ID, not a secret.                                              |
-| `FIRECRAWL_API_KEY`             | Optional external web research        | Server-only; Firecrawl supports public-page research, not YouTube-native metrics. Runs may consume credits.                                   |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Browser Supabase client               | Public project URL; safe for the browser.                                                                                                     |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser Supabase client               | Public anon key; access still depends on row-level security.                                                                                  |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Trusted server/worker database access | Highly privileged and server-only. Never expose it to the browser.                                                                            |
-| `JOB_WORKER_SECRET`             | Trusted scheduler authentication      | Server-only random value of at least 32 characters, sent only through the `x-job-worker-secret` header.                                       |
+| Variable                        | Required for                          | Exposure and notes                                                                                          |
+| ------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `OPENAI_API_KEY`                | Live voice sessions                   | Server-only standard API key used to mint short-lived Realtime client secrets.                              |
+| `YOUTUBE_API_KEY`               | Official YouTube metadata             | Server-only; the primary source for YouTube-native data.                                                    |
+| `APIFY_API_TOKEN`               | Optional YouTube enrichment           | Server-only; use only after explicit approval because runs may consume credits.                             |
+| `APIFY_ACTOR_ID`                | Optional Apify enrichment             | Server-only actor identifier. The example contains the supported default actor ID, not a secret.            |
+| `FIRECRAWL_API_KEY`             | Optional external web research        | Server-only; Firecrawl supports public-page research, not YouTube-native metrics. Runs may consume credits. |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Browser Supabase client               | Public project URL; safe for the browser.                                                                   |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser Supabase client               | Public anon key; access still depends on row-level security.                                                |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Trusted server/worker database access | Highly privileged and server-only. Never expose it to the browser.                                          |
+| `JOB_WORKER_SECRET`             | Trusted scheduler authentication      | Server-only random value of at least 32 characters, sent only through the `x-job-worker-secret` header.     |
 
 The server schema also supports an optional `OPENAI_REALTIME_MODEL`; it is intentionally fixed to and defaults to `gpt-realtime-2.1`. `RUN_LIVE_APIFY_TEST=1` is a test-only opt-in for the live Apify probe and is not an application configuration value.
 

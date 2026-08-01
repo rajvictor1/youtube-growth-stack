@@ -20,7 +20,7 @@ export function AgentStatus({ status }: { status: VoiceAgentStatus }) {
   return (
     <Badge
       variant="outline"
-      className="h-7 gap-1.5 rounded-full bg-background/80 px-2.5 text-xs backdrop-blur"
+      className="h-8 gap-2 rounded-full border-0 bg-card px-3 text-xs shadow-xs"
     >
       {isActive ? (
         <LoaderCircle className="size-3 animate-spin" aria-hidden="true" />
@@ -29,8 +29,8 @@ export function AgentStatus({ status }: { status: VoiceAgentStatus }) {
           className={cn(
             "size-2.5 fill-current",
             status === "error" && "text-destructive",
-            status === "listening" && "text-emerald-500",
-            status === "speaking" && "text-sky-500",
+            status === "listening" && "text-primary",
+            status === "speaking" && "text-accent-foreground",
           )}
           aria-hidden="true"
         />

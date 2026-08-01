@@ -1,7 +1,15 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { AudioLines, Check, GitBranch, ShieldCheck, X } from "lucide-react";
+import {
+  AudioLines,
+  Check,
+  DatabaseZap,
+  LockKeyhole,
+  ShieldCheck,
+  Sparkles,
+  X,
+} from "lucide-react";
 
 import { AgentStatus } from "@/components/dashboard/agent-status";
 import { ConversationPanel } from "@/components/dashboard/conversation-panel";
@@ -21,45 +29,59 @@ export function VoiceDashboard() {
   const agent = useRealtimeAgent(handleDashboardUpdate);
 
   return (
-    <main className="voice-grid min-h-screen bg-background p-3 text-foreground sm:p-5">
-      <div className="mx-auto flex min-h-[calc(100vh-1.5rem)] max-w-[1600px] flex-col overflow-hidden rounded-2xl border bg-background shadow-2xl shadow-foreground/5 sm:min-h-[calc(100vh-2.5rem)]">
-        <header className="flex min-h-16 flex-wrap items-center justify-between gap-3 border-b px-4 py-3 sm:px-6">
+    <main className="voice-grid min-h-screen bg-background p-3 text-foreground sm:p-5 lg:p-6">
+      <div className="mx-auto flex min-h-[calc(100vh-1.5rem)] max-w-[1680px] flex-col sm:min-h-[calc(100vh-2.5rem)]">
+        <header className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-[calc(var(--radius)+0.35rem)] bg-card px-4 py-3 shadow-md sm:px-5">
           <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
+            <div className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
               <AudioLines className="size-5" aria-hidden="true" />
             </div>
             <div>
-              <h1 className="text-sm font-semibold tracking-tight">
-                YouTube Growth Stack
+              <h1 className="font-serif text-lg font-semibold tracking-tight sm:text-xl">
+                YouTube Growth Agent
               </h1>
               <p className="text-xs text-muted-foreground">
-                Voice-first competitor intelligence
+                Talk through your next breakout video
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="hidden rounded-full sm:flex">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Badge
+              variant="secondary"
+              className="hidden h-8 rounded-full border-0 px-3 shadow-xs sm:flex"
+            >
               <ShieldCheck className="size-3" />
-              Human-approved actions
+              You approve paid research
             </Badge>
             <AgentStatus status={agent.status} />
-            <Button variant="ghost" size="icon" aria-label="Open GitHub repository">
-              <GitBranch className="size-4" />
-            </Button>
           </div>
         </header>
 
         {agent.pendingApproval && (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-amber-500/10 px-5 py-3 text-sm">
-            <p>
-              Approve the agent action: <strong>{agent.pendingApproval.toolName}</strong>
-            </p>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-accent px-5 py-4 text-sm text-accent-foreground shadow-md">
+            <div className="flex items-start gap-3">
+              <div className="grid size-9 shrink-0 place-items-center rounded-2xl bg-card shadow-xs">
+                <LockKeyhole className="size-4" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="font-semibold">Your approval is required</p>
+                <p className="mt-0.5 text-xs opacity-80">
+                  Allow one run of{" "}
+                  <strong>{agent.pendingApproval.toolName}</strong>.
+                </p>
+              </div>
+            </div>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={agent.reject}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={agent.reject}
+                className="bg-card shadow-xs"
+              >
                 <X className="size-3.5" /> Reject
               </Button>
-              <Button size="sm" onClick={agent.approve}>
+              <Button size="sm" onClick={agent.approve} className="shadow-sm">
                 <Check className="size-3.5" /> Approve once
               </Button>
             </div>
@@ -67,14 +89,25 @@ export function VoiceDashboard() {
         )}
 
         {agent.error && (
-          <div className="border-b border-destructive/20 bg-destructive/10 px-5 py-3 text-sm text-destructive">
-            {agent.error}
+          <div
+            className="mb-4 flex items-center gap-3 rounded-3xl bg-destructive px-5 py-4 text-sm text-destructive-foreground shadow-md"
+            role="alert"
+          >
+            <X className="size-4 shrink-0" aria-hidden="true" />
+            <span>{agent.error}</span>
           </div>
         )}
 
-        <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(320px,0.72fr)_minmax(0,1.28fr)]">
-          <div className="flex min-h-[680px] flex-col border-b lg:min-h-0 lg:border-r lg:border-b-0">
-            <div className="grid min-h-[300px] place-items-center border-b bg-muted/10 px-5 py-8">
+        <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[minmax(350px,0.72fr)_minmax(0,1.28fr)]">
+          <section
+            className="flex min-h-[760px] flex-col gap-4 lg:min-h-0"
+            aria-label="Voice and conversation"
+          >
+            <div className="relative grid min-h-[390px] place-items-center overflow-hidden rounded-[calc(var(--radius)+0.5rem)] bg-card py-7 shadow-lg">
+              <div className="absolute left-5 top-5 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                <Sparkles className="size-3" aria-hidden="true" />
+                Voice control
+              </div>
               <VoiceControl
                 status={agent.status}
                 isConnected={agent.isConnected}
@@ -90,13 +123,16 @@ export function VoiceDashboard() {
               canSend={agent.isConnected}
               onSend={agent.sendText}
             />
-          </div>
+          </section>
           <WorkspaceCanvas snapshot={snapshot} />
         </div>
 
-        <footer className="flex flex-wrap items-center justify-between gap-2 border-t px-5 py-2.5 text-[11px] text-muted-foreground">
-          <span>Powered by OpenAI gpt-realtime-2.1</span>
-          <span>The spoken voice is AI-generated.</span>
+        <footer className="mt-4 flex flex-wrap items-center justify-between gap-3 px-2 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-2">
+            <DatabaseZap className="size-3.5" aria-hidden="true" />
+            Research tools run only after your approval
+          </span>
+          <span>Voice by OpenAI gpt-realtime-2.1 · AI-generated speech</span>
         </footer>
       </div>
     </main>

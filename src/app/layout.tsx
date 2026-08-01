@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Geist } from "next/font/google";
+import { Lora, Plus_Jakarta_Sans, Roboto_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+});
+const lora = Lora({ subsets: ["latin"], variable: "--font-lora" });
+const robotoMono = Roboto_Mono({
+  subsets: ["latin"],
+  variable: "--font-roboto-mono",
+});
 
 export const metadata: Metadata = {
   title: "YouTube Growth Stack",
@@ -18,7 +26,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html
+      lang="en"
+      className={cn(
+        "font-sans",
+        jakarta.variable,
+        lora.variable,
+        robotoMono.variable,
+      )}
+    >
       <body className="min-h-screen antialiased">
         <TooltipProvider>{children}</TooltipProvider>
       </body>

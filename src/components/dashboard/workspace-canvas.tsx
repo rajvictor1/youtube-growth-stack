@@ -19,47 +19,72 @@ const compactNumber = new Intl.NumberFormat("en", {
   maximumFractionDigits: 1,
 });
 
-export function WorkspaceCanvas({
-  snapshot,
-}: {
-  snapshot: DashboardSnapshot;
-}) {
+export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
   return (
-    <section className="flex min-h-0 flex-1 flex-col bg-muted/20" aria-label="Live workspace">
-      <div className="flex items-center justify-between border-b bg-background/80 px-5 py-4 backdrop-blur">
+    <section
+      className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[calc(var(--radius)+0.5rem)] bg-card shadow-lg"
+      aria-label="Live workspace"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-5 sm:px-6">
         <div>
           <div className="flex items-center gap-2">
-            <p className="text-sm font-semibold">Live workspace</p>
-            <Badge variant="secondary" className="rounded-full text-[10px]">
-              Demo data
+            <p className="font-serif text-xl font-semibold tracking-tight">
+              Research desk
+            </p>
+            <Badge
+              variant="secondary"
+              className="rounded-full border-0 text-[10px] shadow-xs"
+            >
+              Demo evidence
             </Badge>
           </div>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Evidence appears here while you talk.
+            Sources, patterns, and ideas appear here while you talk.
           </p>
         </div>
-        <Button variant="outline" size="sm">
-          Export brief
+        <Button
+          variant="outline"
+          size="sm"
+          disabled
+          className="bg-card shadow-xs"
+        >
+          Brief preview
           <ArrowUpRight className="size-3.5" />
         </Button>
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
-        <div className="space-y-6 p-5 lg:p-6">
+        <div className="space-y-7 px-5 pb-6 pt-2 sm:px-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                What is moving
+              </p>
+              <h2 className="mt-1 text-sm font-semibold">Growth signals</h2>
+            </div>
+            <Radar className="size-4 text-primary" aria-hidden="true" />
+          </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {snapshot.signals.map((signal, index) => {
               const icons = [TrendingUp, Sparkles, Radar];
               const Icon = icons[index] ?? Radar;
               return (
-                <Card key={signal.label} className="gap-3 py-4 shadow-none">
+                <Card
+                  key={signal.label}
+                  className="gap-3 border-0 bg-secondary/70 py-4 shadow-sm"
+                >
                   <CardContent className="px-4">
                     <div className="mb-4 flex items-center justify-between">
-                      <Icon className="size-4 text-muted-foreground" />
+                      <div className="grid size-8 place-items-center rounded-xl bg-card text-primary shadow-xs">
+                        <Icon className="size-4" />
+                      </div>
                       <span className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
                         Signal
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground">{signal.label}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {signal.label}
+                    </p>
                     <p className="mt-1 font-semibold">{signal.value}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {signal.detail}
@@ -70,23 +95,27 @@ export function WorkspaceCanvas({
             })}
           </div>
 
-          <Card className="gap-0 overflow-hidden py-0 shadow-none">
-            <CardHeader className="flex-row items-center justify-between border-b py-4">
+          <Card className="gap-0 overflow-hidden border-0 bg-secondary/55 py-0 shadow-md">
+            <CardHeader className="flex-row items-center justify-between py-5">
               <div>
                 <CardTitle className="text-sm">Competitor outliers</CardTitle>
                 <p className="mt-1 text-xs text-muted-foreground">
                   Videos performing above each channel&apos;s baseline.
                 </p>
               </div>
-              <TrendingUp className="size-4 text-muted-foreground" />
+              <div className="grid size-9 place-items-center rounded-2xl bg-card text-primary shadow-xs">
+                <TrendingUp className="size-4" />
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               {snapshot.outliers.map((video, index) => (
                 <div key={video.id}>
-                  {index > 0 && <Separator />}
+                  {index > 0 && <Separator className="bg-border/70" />}
                   <div className="grid grid-cols-[1fr_auto] gap-4 px-5 py-4 sm:grid-cols-[1fr_auto_auto] sm:items-center">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{video.title}</p>
+                      <p className="truncate text-sm font-medium">
+                        {video.title}
+                      </p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {video.channel}
                       </p>
@@ -99,7 +128,7 @@ export function WorkspaceCanvas({
                         views
                       </p>
                     </div>
-                    <Badge className="col-span-2 justify-self-start rounded-full sm:col-span-1 sm:justify-self-auto">
+                    <Badge className="col-span-2 justify-self-start rounded-full shadow-xs sm:col-span-1 sm:justify-self-auto">
                       {video.multiplier.toFixed(1)}× outlier
                     </Badge>
                   </div>
@@ -109,7 +138,7 @@ export function WorkspaceCanvas({
           </Card>
 
           <div>
-            <div className="mb-3 flex items-end justify-between">
+            <div className="mb-4 flex items-end justify-between">
               <div>
                 <div className="flex items-center gap-2">
                   <Lightbulb className="size-4" />
@@ -122,13 +151,24 @@ export function WorkspaceCanvas({
             </div>
             <div className="grid gap-3 xl:grid-cols-2">
               {snapshot.ideas.map((idea) => (
-                <Card key={idea.id} className="gap-4 shadow-none">
+                <Card
+                  key={idea.id}
+                  className="gap-4 border-0 bg-accent/70 shadow-md"
+                >
                   <CardHeader>
                     <div className="mb-2 flex items-center justify-between">
-                      <Badge variant="outline" className="rounded-full">
+                      <Badge
+                        variant="outline"
+                        className="rounded-full bg-card shadow-xs"
+                      >
                         Score {idea.score}
                       </Badge>
-                      <Button variant="ghost" size="icon" aria-label="Save idea">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled
+                        aria-label="Save idea preview"
+                      >
                         <Bookmark className="size-4" />
                       </Button>
                     </div>
