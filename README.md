@@ -10,6 +10,15 @@ after explicit user approval.
 
 ## Getting Started
 
+Create an ignored `.env.local` at the repository root before starting the voice runtime:
+
+```dotenv
+OPENAI_API_KEY=your_standard_server_key
+OPENAI_REALTIME_MODEL=gpt-realtime-2.1
+```
+
+The standard key is read only by the server-side client-secret route. The browser receives a short-lived Realtime credential and never receives `OPENAI_API_KEY`. See [the voice runtime architecture](docs/architecture/voice-runtime.md) for the trust boundary and failure semantics.
+
 First, run the development server:
 
 ```bash

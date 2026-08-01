@@ -4,6 +4,9 @@ import { z } from "zod";
 
 const serverEnvSchema = z.object({
   OPENAI_API_KEY: z.string().min(1).optional(),
+  OPENAI_REALTIME_MODEL: z
+    .literal("gpt-realtime-2.1")
+    .default("gpt-realtime-2.1"),
   NEXT_PUBLIC_SUPABASE_URL: z.url().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1).optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),

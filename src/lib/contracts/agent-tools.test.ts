@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { agentToolRequestSchema } from "@/lib/contracts/agent-tools";
+import {
+  agentToolRequestSchema,
+  agentToolResultSchemas,
+} from "@/lib/contracts/agent-tools";
 
 describe("agentToolRequestSchema", () => {
   it("accepts a bounded competitor research request", () => {
@@ -65,5 +68,46 @@ describe("agentToolRequestSchema", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("rejects a tool result that overstates a queued research job", () => {
+    const result = agentToolResultSchemas.start_competitor_research.safeParse({
+      id: crypto.randomUUID(),
+      status: "completed",
+      provider: "inline",
+      message: "Finished",
+      input: { query: "AI creator channels", maxCompetitors: 8 },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts a validated Firecrawl completion result", () => {
+    const result = agentToolResultSchemas.research_external_source.safeParse({
+      status: "completed",
+      document: {
+        provider: "firecrawl",
+        purpose: "supporting_web_research",
+        sourceUrl: "https://example.com/research",
+        resolvedUrl: "https://example.com/research",
+        title: "Research",
+        description: null,
+        markdown: "Evidence",
+        truncated: false,
+        publishedAt: null,
+      },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts the explicit not-saved persistence result", () => {
+    const result = agentToolResultSchemas.save_content_idea.safeParse({
+      saved: false,
+      reason: "Persistence is not configured.",
+      idea: { title: "A grounded idea", angle: "Explain the evidence" },
+    });
+
+    expect(result.success).toBe(true);
   });
 });

@@ -1,14 +1,17 @@
-import { createHash } from "node:crypto";
-
-import { DEFAULT_REALTIME_VOICE, OPENAI_MODELS } from "@/config/models";
+import { OPENAI_MODELS } from "@/config/models";
+import { realtimeClientSecretRequestSchema } from "@/lib/contracts/realtime";
 import { getServerEnv } from "@/lib/env/server";
+import {
+  createRealtimeClientSecret,
+  RealtimeClientSecretError,
+} from "@/lib/openai/realtime-client-secret";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const { OPENAI_API_KEY } = getServerEnv();
+  const env = getServerEnv();
 
-  if (!OPENAI_API_KEY) {
+  if (!env.OPENAI_API_KEY) {
     return Response.json(
       {
         error:
@@ -18,49 +21,40 @@ export async function POST(request: Request) {
     );
   }
 
-  const clientSessionId =
-    request.headers.get("x-session-id") ?? crypto.randomUUID();
-  const safetyIdentifier = createHash("sha256")
-    .update(clientSessionId)
-    .digest("hex");
+  const parsedRequest = realtimeClientSecretRequestSchema.safeParse({
+    sessionId: request.headers.get("x-session-id"),
+  });
+  if (!parsedRequest.success) {
+    return Response.json(
+      { error: "A valid voice session identifier is required." },
+      { status: 400 },
+    );
+  }
 
-  const response = await fetch(
-    "https://api.openai.com/v1/realtime/client_secrets",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-        "OpenAI-Safety-Identifier": safetyIdentifier,
+  try {
+    const data = await createRealtimeClientSecret(
+      env,
+      parsedRequest.data.sessionId,
+    );
+
+    return Response.json(
+      {
+        value: data.value,
+        expiresAt: data.expires_at,
+        model: OPENAI_MODELS.realtime,
       },
-      body: JSON.stringify({
-        session: {
-          type: "realtime",
-          model: OPENAI_MODELS.realtime,
-          audio: { output: { voice: DEFAULT_REALTIME_VOICE } },
-        },
-      }),
-      cache: "no-store",
-    },
-  );
-
-  if (!response.ok) {
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  } catch (error) {
     console.error("Realtime client-secret request failed", {
-      status: response.status,
+      kind:
+        error instanceof RealtimeClientSecretError ? error.kind : "unexpected",
+      status:
+        error instanceof RealtimeClientSecretError ? error.status : undefined,
     });
     return Response.json(
       { error: "OpenAI could not create a Realtime session." },
       { status: 502 },
     );
   }
-
-  const data = (await response.json()) as {
-    value: string;
-    expires_at?: number;
-  };
-
-  return Response.json(
-    { value: data.value, expiresAt: data.expires_at },
-    { headers: { "Cache-Control": "no-store" } },
-  );
 }

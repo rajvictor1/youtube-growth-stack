@@ -2,31 +2,42 @@ import { tool } from "@openai/agents/realtime";
 
 import {
   getDashboardSnapshotInputSchema,
+  agentToolResultSchemas,
   saveContentIdeaInputSchema,
   startCompetitorResearchInputSchema,
   type AgentToolRequest,
+  type AgentToolResultMap,
 } from "@/lib/contracts/agent-tools";
 import { externalResearchSourceInputSchema } from "@/lib/contracts/external-research";
 
-type ToolEvent = {
-  action: AgentToolRequest["action"];
-  result: unknown;
-};
+export type ToolEvent = {
+  [Action in AgentToolRequest["action"]]: {
+    action: Action;
+    result: AgentToolResultMap[Action];
+  };
+}[AgentToolRequest["action"]];
 
-async function callToolApi(request: AgentToolRequest) {
+async function callToolApi<Action extends AgentToolRequest["action"]>(
+  request: Extract<AgentToolRequest, { action: Action }>,
+): Promise<AgentToolResultMap[Action]> {
   const response = await fetch("/api/tools", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
   });
 
-  const result = (await response.json()) as unknown;
+  const result: unknown = await response.json();
 
   if (!response.ok) {
     throw new Error("The application tool could not complete the request.");
   }
 
-  return result;
+  const parsed = agentToolResultSchemas[request.action].safeParse(result);
+  if (!parsed.success) {
+    throw new Error("The application tool returned an invalid response.");
+  }
+
+  return parsed.data as AgentToolResultMap[Action];
 }
 
 export function createGrowthAgentTools(

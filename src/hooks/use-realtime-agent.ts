@@ -8,6 +8,10 @@ import { createYouTubeGrowthAgent } from "@/agents/youtube-growth-agent";
 import { OPENAI_MODELS } from "@/config/models";
 import type { DashboardSnapshot } from "@/lib/contracts/dashboard";
 import {
+  realtimeClientSecretResponseSchema,
+  type RealtimeClientSecretResponse,
+} from "@/lib/contracts/realtime";
+import {
   historyToTranscript,
   type TranscriptMessage,
 } from "@/lib/realtime/history";
@@ -33,6 +37,35 @@ const welcomeMessage: TranscriptMessage = {
   text: "Tell me what you want to learn from your competitors. I can research outliers, explain patterns, and turn them into video ideas.",
 };
 
+async function requestRealtimeClientSecret(
+  sessionId: string,
+): Promise<RealtimeClientSecretResponse> {
+  const response = await fetch("/api/realtime/client-secret", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Session-ID": sessionId,
+    },
+  });
+  const payload: unknown = await response.json();
+
+  if (!response.ok) {
+    const error = payload as { error?: unknown };
+    throw new Error(
+      typeof error.error === "string"
+        ? error.error
+        : "OpenAI could not create a Realtime session.",
+    );
+  }
+
+  const parsed = realtimeClientSecretResponseSchema.safeParse(payload);
+  if (!parsed.success) {
+    throw new Error("The server returned an invalid Realtime client secret.");
+  }
+
+  return parsed.data;
+}
+
 export function useRealtimeAgent(
   onDashboardUpdate?: (snapshot: DashboardSnapshot) => void,
 ) {
@@ -46,12 +79,14 @@ export function useRealtimeAgent(
   const [pendingApproval, setPendingApproval] =
     useState<PendingApproval | null>(null);
   const [isMuted, setIsMuted] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   const disconnect = useCallback(() => {
     sessionRef.current?.close();
     sessionRef.current = null;
     setPendingApproval(null);
     setIsMuted(false);
+    setIsConnected(false);
     setStatus("idle");
   }, []);
 
@@ -67,24 +102,7 @@ export function useRealtimeAgent(
 
     try {
       sessionIdRef.current ??= crypto.randomUUID();
-      const tokenResponse = await fetch("/api/realtime/client-secret", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Session-ID": sessionIdRef.current,
-        },
-      });
-      const token = (await tokenResponse.json()) as {
-        value?: string;
-        error?: string;
-      };
-
-      if (!tokenResponse.ok || !token.value) {
-        throw new Error(
-          token.error ??
-            "OpenAI is not configured. Add OPENAI_API_KEY to .env.local.",
-        );
-      }
+      const token = await requestRealtimeClientSecret(sessionIdRef.current);
 
       const agent = createYouTubeGrowthAgent((event) => {
         if (event.action !== "get_dashboard_snapshot") {
@@ -134,10 +152,11 @@ export function useRealtimeAgent(
 
       await session.connect({
         apiKey: token.value,
-        model: OPENAI_MODELS.realtime,
+        model: token.model,
       });
 
       sessionRef.current = session;
+      setIsConnected(true);
       setStatus("listening");
     } catch (caughtError) {
       const message =
@@ -207,7 +226,7 @@ export function useRealtimeAgent(
     disconnect,
     error,
     interrupt,
-    isConnected: Boolean(sessionRef.current),
+    isConnected,
     isMuted,
     messages,
     pendingApproval,
