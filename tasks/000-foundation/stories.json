@@ -1,0 +1,61 @@
+{
+  "feature": "repository-foundation",
+  "branchName": "feat/repository-foundation",
+  "stories": [
+    {
+      "id": "foundation-1",
+      "priority": 1,
+      "title": "Scaffold the application and theme boundary",
+      "acceptanceCriteria": [
+        "Next.js TypeScript app exists",
+        "shadcn semantic theme tokens are replaceable by tweakcn",
+        "voice-first dashboard shell renders"
+      ],
+      "passes": true
+    },
+    {
+      "id": "foundation-2",
+      "priority": 2,
+      "title": "Create the secure Realtime boundary",
+      "acceptanceCriteria": [
+        "Standard OpenAI key remains server-only",
+        "Browser uses a short-lived client secret",
+        "Voice and text share gpt-realtime-2.1"
+      ],
+      "passes": true
+    },
+    {
+      "id": "foundation-3",
+      "priority": 3,
+      "title": "Create provider and persistence boundaries",
+      "acceptanceCriteria": [
+        "YouTube, Apify, and Firecrawl adapters are server-only",
+        "Supabase schema enables RLS",
+        "Long research uses a provider-neutral queue contract"
+      ],
+      "passes": true
+    },
+    {
+      "id": "foundation-4",
+      "priority": 4,
+      "title": "Document the system for agents and contributors",
+      "acceptanceCriteria": [
+        "AGENTS.md and nested instructions exist",
+        "Repo-local skills validate",
+        "README contains requested diagrams"
+      ],
+      "passes": false
+    },
+    {
+      "id": "foundation-5",
+      "priority": 5,
+      "title": "Verify and publish the public repository",
+      "acceptanceCriteria": [
+        "All local checks pass",
+        "Secret scan is clean",
+        "Public MIT repository is verified remotely"
+      ],
+      "passes": false
+    }
+  ]
+}
