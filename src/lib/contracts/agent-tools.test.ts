@@ -6,10 +6,21 @@ import {
 } from "@/lib/contracts/agent-tools";
 
 describe("agentToolRequestSchema", () => {
+  const projectId = "11111111-1111-4111-8111-111111111111";
+  const approval = {
+    approved: true as const,
+    approvedAt: "2026-08-01T08:00:00.000Z",
+  };
+
   it("accepts a bounded competitor research request", () => {
     const result = agentToolRequestSchema.safeParse({
       action: "start_competitor_research",
-      payload: { query: "AI creator channels", maxCompetitors: 8 },
+      payload: {
+        projectId,
+        query: "AI creator channels",
+        maxCompetitors: 8,
+        approval,
+      },
     });
 
     expect(result.success).toBe(true);
@@ -18,7 +29,12 @@ describe("agentToolRequestSchema", () => {
   it("rejects an unbounded competitor count", () => {
     const result = agentToolRequestSchema.safeParse({
       action: "start_competitor_research",
-      payload: { query: "AI creator channels", maxCompetitors: 500 },
+      payload: {
+        projectId,
+        query: "AI creator channels",
+        maxCompetitors: 500,
+        approval,
+      },
     });
 
     expect(result.success).toBe(false);
@@ -28,8 +44,10 @@ describe("agentToolRequestSchema", () => {
     const result = agentToolRequestSchema.safeParse({
       action: "start_competitor_research",
       payload: {
+        projectId,
         query: "AI creator channels",
         maxCompetitors: 8,
+        approval,
         apify: {
           searchQueries: ["AI creator channels"],
           maxResults: 8,
@@ -74,9 +92,9 @@ describe("agentToolRequestSchema", () => {
     const result = agentToolResultSchemas.start_competitor_research.safeParse({
       id: crypto.randomUUID(),
       status: "completed",
-      provider: "inline",
+      provider: "supabase",
       message: "Finished",
-      input: { query: "AI creator channels", maxCompetitors: 8 },
+      input: { projectId, query: "AI creator channels", maxCompetitors: 8 },
     });
 
     expect(result.success).toBe(false);

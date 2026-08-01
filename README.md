@@ -8,6 +8,17 @@ default Actor ID is `h7sDV53CddomktSi5`. Never expose either value through a
 `NEXT_PUBLIC_` variable. Apify research may consume credits and must only run
 after explicit user approval.
 
+Durable research also requires a Supabase project, the two public Supabase
+browser values, the server-only service-role key, and a random
+`JOB_WORKER_SECRET` of at least 32 characters. Apply migrations in timestamp
+order, authenticate the creator, and create a project owned by that user before
+enqueueing research. The research tool requires that project's UUID.
+
+After deployment, configure a trusted scheduler to call
+`POST /api/jobs/process` with the `x-job-worker-secret` header. One call claims
+and processes at most one approved job; an `idle` response means no work was
+due. Never expose the service-role key or worker secret to browser code.
+
 ## Getting Started
 
 Create an ignored `.env.local` at the repository root before starting the voice runtime:

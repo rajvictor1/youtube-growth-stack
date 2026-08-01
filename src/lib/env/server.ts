@@ -14,7 +14,7 @@ const serverEnvSchema = z.object({
   APIFY_API_TOKEN: z.string().min(1).optional(),
   APIFY_ACTOR_ID: z.string().min(1).optional(),
   FIRECRAWL_API_KEY: z.string().min(1).optional(),
-  JOB_QUEUE_PROVIDER: z.enum(["inline", "trigger.dev"]).default("inline"),
+  JOB_WORKER_SECRET: z.string().min(32).optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

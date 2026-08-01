@@ -10,9 +10,15 @@ import {
 export const getDashboardSnapshotInputSchema = z.object({});
 
 export const startCompetitorResearchInputSchema = z.object({
+  projectId: z.uuid(),
   query: z.string().min(2).max(500),
   maxCompetitors: z.number().int().min(1).max(20).default(8),
   apify: apifyYouTubeActorInputSchema.optional(),
+});
+
+export const researchApprovalSchema = z.object({
+  approved: z.literal(true),
+  approvedAt: z.iso.datetime(),
 });
 
 export const saveContentIdeaInputSchema = z.object({
@@ -27,7 +33,9 @@ export const agentToolRequestSchema = z.discriminatedUnion("action", [
   }),
   z.object({
     action: z.literal("start_competitor_research"),
-    payload: startCompetitorResearchInputSchema,
+    payload: startCompetitorResearchInputSchema.extend({
+      approval: researchApprovalSchema,
+    }),
   }),
   z.object({
     action: z.literal("research_external_source"),
@@ -57,8 +65,8 @@ export const getDashboardSnapshotResultSchema = z.object({
 
 export const startCompetitorResearchResultSchema = z.object({
   id: z.uuid(),
-  status: z.enum(["configuration_required", "queued"]),
-  provider: z.enum(["inline", "trigger.dev"]),
+  status: z.literal("queued"),
+  provider: z.literal("supabase"),
   message: z.string(),
   input: startCompetitorResearchInputSchema,
 });
@@ -86,8 +94,6 @@ export type AgentToolResultMap = {
   start_competitor_research: z.infer<
     typeof startCompetitorResearchResultSchema
   >;
-  research_external_source: z.infer<
-    typeof researchExternalSourceResultSchema
-  >;
+  research_external_source: z.infer<typeof researchExternalSourceResultSchema>;
   save_content_idea: z.infer<typeof saveContentIdeaResultSchema>;
 };

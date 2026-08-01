@@ -3,6 +3,7 @@ import { demoDashboardSnapshot } from "@/lib/data/demo";
 import { getConfiguredServices } from "@/lib/env/server";
 import { createResearchJob } from "@/lib/jobs/queue";
 import { scrapeExternalResearchSource } from "@/lib/providers/firecrawl";
+import { getAuthenticatedUserId } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
@@ -32,7 +33,15 @@ export async function POST(request: Request) {
       });
 
     case "start_competitor_research": {
-      const job = await createResearchJob(parsed.data.payload);
+      const requestedBy = await getAuthenticatedUserId(request);
+      if (!requestedBy) {
+        return Response.json(
+          { error: "Authentication required" },
+          { status: 401 },
+        );
+      }
+      const { approval, ...input } = parsed.data.payload;
+      const job = await createResearchJob(input, approval, requestedBy);
       return Response.json(job, { status: 202 });
     }
 

@@ -9,6 +9,7 @@ import {
   type AgentToolResultMap,
 } from "@/lib/contracts/agent-tools";
 import { externalResearchSourceInputSchema } from "@/lib/contracts/external-research";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export type ToolEvent = {
   [Action in AgentToolRequest["action"]]: {
@@ -19,10 +20,14 @@ export type ToolEvent = {
 
 async function callToolApi<Action extends AgentToolRequest["action"]>(
   request: Extract<AgentToolRequest, { action: Action }>,
+  accessToken?: string,
 ): Promise<AgentToolResultMap[Action]> {
   const response = await fetch("/api/tools", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
     body: JSON.stringify(request),
   });
 
@@ -65,10 +70,20 @@ export function createGrowthAgentTools(
       parameters: startCompetitorResearchInputSchema,
       needsApproval: true,
       execute: async (payload) => {
-        const result = await callToolApi({
-          action: "start_competitor_research",
-          payload,
-        });
+        const { data } = await createSupabaseBrowserClient().auth.getSession();
+        const result = await callToolApi(
+          {
+            action: "start_competitor_research",
+            payload: {
+              ...payload,
+              approval: {
+                approved: true,
+                approvedAt: new Date().toISOString(),
+              },
+            },
+          },
+          data.session?.access_token,
+        );
         onToolEvent?.({ action: "start_competitor_research", result });
         return JSON.stringify(result);
       },

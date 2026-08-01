@@ -2,46 +2,56 @@ import "server-only";
 
 import type { z } from "zod";
 
-import { startCompetitorResearchInputSchema } from "@/lib/contracts/agent-tools";
-import { getConfiguredServices, getServerEnv } from "@/lib/env/server";
+import {
+  researchApprovalSchema,
+  startCompetitorResearchInputSchema,
+} from "@/lib/contracts/agent-tools";
+import { apifyYouTubeActorInputSchema } from "@/lib/contracts/apify";
+import {
+  SupabaseResearchJobRepository,
+  type ResearchJobRepository,
+} from "@/lib/jobs/repository";
 
 type ResearchInput = z.infer<typeof startCompetitorResearchInputSchema>;
+type ResearchApproval = z.infer<typeof researchApprovalSchema>;
 
 export type ResearchJob = {
   id: string;
-  status: "configuration_required" | "queued";
-  provider: "inline" | "trigger.dev";
+  status: "queued";
+  provider: "supabase";
   message: string;
   input: ResearchInput;
 };
 
 export async function createResearchJob(
   input: ResearchInput,
+  approval: ResearchApproval,
+  requestedBy: string,
+  repository: ResearchJobRepository = new SupabaseResearchJobRepository(),
 ): Promise<ResearchJob> {
-  const env = getServerEnv();
-  const services = getConfiguredServices(env);
-  const hasResearchSource =
-    services.youtube || services.apify || services.firecrawl;
-
-  if (!services.supabase || !hasResearchSource) {
-    return {
-      id: crypto.randomUUID(),
-      status: "configuration_required",
-      provider: "inline",
-      message:
-        "The job contract is ready, but Supabase and at least one research provider must be configured before work can be queued.",
-      input,
-    };
-  }
+  const parsedInput = startCompetitorResearchInputSchema.parse(input);
+  const parsedApproval = researchApprovalSchema.parse(approval);
+  const { id } = await repository.enqueue({
+    projectId: parsedInput.projectId,
+    requestedBy,
+    approvedAt: parsedApproval.approvedAt,
+    input: {
+      query: parsedInput.query,
+      maxCompetitors: parsedInput.maxCompetitors,
+      apify: apifyYouTubeActorInputSchema.parse(
+        parsedInput.apify ?? {
+          searchQueries: [parsedInput.query],
+          maxResults: parsedInput.maxCompetitors,
+        },
+      ),
+    },
+  });
 
   return {
-    id: crypto.randomUUID(),
+    id,
     status: "queued",
-    provider: env.JOB_QUEUE_PROVIDER,
-    message:
-      env.JOB_QUEUE_PROVIDER === "trigger.dev"
-        ? "Trigger.dev adapter is selected and must be connected before production use."
-        : "Queued for the local development adapter.",
-    input,
+    provider: "supabase",
+    message: "Approved research was persisted and is waiting for a worker.",
+    input: parsedInput,
   };
 }
