@@ -1,5 +1,5 @@
-import { OrchestrationDashboard } from "@/components/dashboard/orchestration-dashboard";
+import { VoiceDashboard } from "@/components/dashboard/voice-dashboard";
 
 export default function Home() {
-  return <OrchestrationDashboard />;
+  return <VoiceDashboard />;
 }
