@@ -9,7 +9,7 @@ const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   YOUTUBE_API_KEY: z.string().min(1).optional(),
   APIFY_API_TOKEN: z.string().min(1).optional(),
-  APIFY_YOUTUBE_ACTOR_ID: z.string().min(1).optional(),
+  APIFY_ACTOR_ID: z.string().min(1).optional(),
   FIRECRAWL_API_KEY: z.string().min(1).optional(),
   JOB_QUEUE_PROVIDER: z.enum(["inline", "trigger.dev"]).default("inline"),
 });
@@ -27,7 +27,7 @@ export function getConfiguredServices(env = getServerEnv()) {
       env.NEXT_PUBLIC_SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY,
     ),
     youtube: Boolean(env.YOUTUBE_API_KEY),
-    apify: Boolean(env.APIFY_API_TOKEN && env.APIFY_YOUTUBE_ACTOR_ID),
+    apify: Boolean(env.APIFY_API_TOKEN && env.APIFY_ACTOR_ID),
     firecrawl: Boolean(env.FIRECRAWL_API_KEY),
   };
 }

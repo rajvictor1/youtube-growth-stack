@@ -20,4 +20,23 @@ describe("agentToolRequestSchema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  it("validates optional Apify Actor input at the tool boundary", () => {
+    const result = agentToolRequestSchema.safeParse({
+      action: "start_competitor_research",
+      payload: {
+        query: "AI creator channels",
+        maxCompetitors: 8,
+        apify: {
+          searchQueries: ["AI creator channels"],
+          maxResults: 8,
+          sortingOrder: "views",
+          aiVideoDescription: false,
+          aiVideoSummary: false,
+        },
+      },
+    });
+
+    expect(result.success).toBe(true);
+  });
 });

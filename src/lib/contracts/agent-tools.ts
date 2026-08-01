@@ -1,10 +1,13 @@
 import { z } from "zod";
 
+import { apifyYouTubeActorInputSchema } from "@/lib/contracts/apify";
+
 export const getDashboardSnapshotInputSchema = z.object({});
 
 export const startCompetitorResearchInputSchema = z.object({
   query: z.string().min(2).max(500),
   maxCompetitors: z.number().int().min(1).max(20).default(8),
+  apify: apifyYouTubeActorInputSchema.optional(),
 });
 
 export const saveContentIdeaInputSchema = z.object({

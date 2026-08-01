@@ -1,5 +1,13 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment
+
+Copy `.env.example` to `.env.local` and fill in server-only provider credentials.
+The Apify YouTube integration uses `APIFY_API_TOKEN` and `APIFY_ACTOR_ID`; the
+default Actor ID is `h7sDV53CddomktSi5`. Never expose either value through a
+`NEXT_PUBLIC_` variable. Apify research may consume credits and must only run
+after explicit user approval.
+
 ## Getting Started
 
 First, run the development server:
