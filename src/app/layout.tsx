@@ -9,7 +9,7 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "YouTube Growth Stack",
   description:
-    "An open-source, voice-first research agent for YouTube creators.",
+    "A voice-first workspace for coordinating YouTube growth research.",
 };
 
 export default function RootLayout({

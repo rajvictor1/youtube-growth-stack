@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { AudioLines, Check, Github, ShieldCheck, X } from "lucide-react";
+import { AudioLines, Check, GitBranch, ShieldCheck, X } from "lucide-react";
 
 import { AgentStatus } from "@/components/dashboard/agent-status";
 import { ConversationPanel } from "@/components/dashboard/conversation-panel";
@@ -45,7 +45,7 @@ export function VoiceDashboard() {
             </Badge>
             <AgentStatus status={agent.status} />
             <Button variant="ghost" size="icon" aria-label="Open GitHub repository">
-              <Github className="size-4" />
+              <GitBranch className="size-4" />
             </Button>
           </div>
         </header>
