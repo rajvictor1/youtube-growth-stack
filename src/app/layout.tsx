@@ -28,14 +28,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(
-        "font-sans",
-        jakarta.variable,
-        lora.variable,
-        robotoMono.variable,
-      )}
+      className={cn("dark font-sans", jakarta.variable, lora.variable, robotoMono.variable)}
     >
-      <body className="min-h-screen antialiased">
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>

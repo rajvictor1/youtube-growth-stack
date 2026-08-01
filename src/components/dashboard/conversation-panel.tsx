@@ -33,12 +33,12 @@ export function ConversationPanel({
 
   return (
     <section
-      className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[calc(var(--radius)+0.25rem)] bg-card shadow-md"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl glass-panel"
       aria-label="Conversation"
     >
       <div className="flex items-start gap-3 px-5 pb-3 pt-5">
-        <div className="grid size-9 shrink-0 place-items-center rounded-2xl bg-accent text-accent-foreground shadow-xs">
-          <MessageCircleMore className="size-4" aria-hidden="true" />
+        <div className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-accent to-accent/60 text-accent-foreground shadow-md">
+          <MessageCircleMore className="size-5" aria-hidden="true" />
         </div>
         <div>
           <p className="text-sm font-semibold">Conversation</p>
@@ -57,7 +57,10 @@ export function ConversationPanel({
                 key={message.id}
                 className={cn("flex gap-3", !isAssistant && "flex-row-reverse")}
               >
-                <div className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary shadow-xs">
+                <div className={cn(
+                  "grid size-8 shrink-0 place-items-center rounded-full shadow-sm",
+                  isAssistant ? "bg-secondary text-secondary-foreground" : "bg-primary text-primary-foreground"
+                )}>
                   {isAssistant ? (
                     <Bot className="size-4" aria-hidden="true" />
                   ) : (
@@ -66,10 +69,10 @@ export function ConversationPanel({
                 </div>
                 <div
                   className={cn(
-                    "max-w-[84%] rounded-3xl px-4 py-3 text-sm leading-6 shadow-xs",
+                    "max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm",
                     isAssistant
-                      ? "rounded-tl-md bg-secondary text-secondary-foreground"
-                      : "rounded-tr-md bg-primary text-primary-foreground",
+                      ? "rounded-tl-md border border-border/50 bg-gradient-to-b from-card to-secondary/80 text-secondary-foreground"
+                      : "rounded-tr-md bg-gradient-to-br from-primary to-[#6d28d9] text-primary-foreground",
                   )}
                 >
                   {message.text}
@@ -81,7 +84,7 @@ export function ConversationPanel({
       </ScrollArea>
 
       <form onSubmit={handleSubmit} className="p-4 pt-2">
-        <div className="clay-inset flex items-end gap-2 rounded-3xl bg-background p-2">
+        <div className="flex items-end gap-2 rounded-2xl border border-border/50 bg-background/60 p-2 shadow-inner">
           <Textarea
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
@@ -104,7 +107,7 @@ export function ConversationPanel({
             type="submit"
             size="icon"
             disabled={!canSend || !draft.trim()}
-            className="shrink-0 rounded-2xl shadow-sm"
+            className="shrink-0 rounded-xl shadow-md"
             aria-label="Send message"
           >
             <Send className="size-4" />

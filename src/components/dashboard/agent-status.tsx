@@ -20,10 +20,10 @@ export function AgentStatus({ status }: { status: VoiceAgentStatus }) {
   return (
     <Badge
       variant="outline"
-      className="h-8 gap-2 rounded-full border-0 bg-card px-3 text-xs shadow-xs"
+      className="h-9 gap-2 rounded-full border border-border/50 bg-card/70 px-3.5 text-xs shadow-xs backdrop-blur-sm"
     >
       {isActive ? (
-        <LoaderCircle className="size-3 animate-spin" aria-hidden="true" />
+        <LoaderCircle className="size-3.5 animate-spin text-primary" aria-hidden="true" />
       ) : (
         <Circle
           className={cn(
@@ -31,11 +31,17 @@ export function AgentStatus({ status }: { status: VoiceAgentStatus }) {
             status === "error" && "text-destructive",
             status === "listening" && "text-primary",
             status === "speaking" && "text-accent-foreground",
+            status === "idle" && "text-emerald-400",
           )}
           aria-hidden="true"
         />
       )}
-      {statusCopy[status]}
+      <span className={cn(
+        status === "idle" && "text-emerald-400",
+        status === "listening" && "text-primary",
+        status === "speaking" && "text-accent-foreground",
+        status === "error" && "text-destructive",
+      )}>{statusCopy[status]}</span>
     </Badge>
   );
 }

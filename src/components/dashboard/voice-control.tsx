@@ -70,22 +70,29 @@ export function VoiceControl({
   const copy = stateCopy[status];
 
   return (
-    <div className="flex w-full flex-col items-center gap-5 px-5 text-center">
-      <div className="relative grid size-48 place-items-center sm:size-56">
+    <div className="flex w-full flex-col items-center gap-6 px-5 text-center">
+      <div className="relative grid size-52 place-items-center sm:size-60">
+        {/* Ambient rings */}        
         <span
           className={cn(
-            "absolute inset-0 rounded-full bg-primary/10 shadow-inner",
-            isAnimating && "[animation:clay-breathe_2.4s_ease-in-out_infinite]",
+            "absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-transparent",
+            isAnimating && "animate-clay-breathe",
           )}
           aria-hidden="true"
         />
         <span
-          className="absolute inset-5 rounded-full border border-card/80 bg-secondary/70 shadow-lg"
+          className="absolute inset-6 rounded-full border border-border/60 bg-gradient-to-b from-card to-secondary/80 shadow-xl"
           aria-hidden="true"
         />
         {isAnimating && (
           <span
-            className="absolute inset-8 rounded-full border-2 border-primary/30 [animation:status-ring_1.8s_ease-out_infinite]"
+            className="absolute inset-10 rounded-full border-2 border-primary/40 animate-status-ring"
+            aria-hidden="true"
+          />
+        )}
+        {isAnimating && (
+          <span
+            className="absolute inset-14 rounded-full border border-primary/20 animate-status-ring [animation-delay:0.5s]"
             aria-hidden="true"
           />
         )}
@@ -93,9 +100,9 @@ export function VoiceControl({
           size="icon"
           onClick={isConnected ? onToggleMute : onConnect}
           className={cn(
-            "relative size-32 rounded-full border-8 border-primary-foreground/20 shadow-2xl transition-[transform,box-shadow] duration-300 hover:scale-[1.025] hover:shadow-xl sm:size-36",
-            status === "error" && "bg-destructive hover:bg-destructive/90",
-            isMuted && "bg-muted-foreground hover:bg-muted-foreground/90",
+            "relative size-36 rounded-full border-4 border-white/10 bg-gradient-to-br from-primary to-[#6d28d9] text-primary-foreground shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-[1.04] hover:shadow-primary/45 sm:size-40",
+            status === "error" && "from-destructive to-destructive/80 hover:shadow-destructive/30",
+            isMuted && "from-muted-foreground to-muted-foreground/80",
           )}
           aria-label={
             !isConnected
@@ -106,21 +113,22 @@ export function VoiceControl({
           }
         >
           {status === "connecting" ? (
-            <LoaderCircle className="size-11 animate-spin" />
+            <LoaderCircle className="size-12 animate-spin" />
           ) : !isConnected ? (
-            <Mic className="size-11" />
+            <Mic className="size-12" />
           ) : isMuted ? (
-            <MicOff className="size-9" />
+            <MicOff className="size-10" />
           ) : status === "speaking" ? (
             <AudioWaveform className="size-12" />
           ) : (
-            <div className="flex h-10 items-center gap-1" aria-hidden="true">
+            <div className="flex h-12 items-end gap-1.5" aria-hidden="true">
               {[0, 1, 2, 3, 4].map((bar) => (
                 <span
                   key={bar}
-                  className="h-8 w-1.5 rounded-full bg-primary-foreground"
+                  className="w-2 rounded-full bg-primary-foreground animate-voice-pulse"
                   style={{
-                    animation: `voice-pulse 0.9s ${bar * 0.1}s ease-in-out infinite`,
+                    height: `${38 + bar * 10}%`,
+                    animationDelay: `${bar * 0.12}s`,
                   }}
                 />
               ))}
@@ -130,21 +138,21 @@ export function VoiceControl({
       </div>
 
       <div className="max-w-sm">
-        <p className="font-serif text-2xl font-semibold tracking-tight">
+        <p className="font-sans text-2xl font-semibold tracking-tight sm:text-3xl">
           {isMuted ? "Microphone muted" : copy.title}
         </p>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        <p className="mt-2 text-sm leading-7 text-muted-foreground">
           {isMuted ? "Unmute when you’re ready to continue." : copy.detail}
         </p>
       </div>
 
       {isConnected && (
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <Button
             variant="secondary"
             size="sm"
             onClick={onInterrupt}
-            className="shadow-xs"
+            className="rounded-xl border border-border/40 shadow-xs"
           >
             <Square className="size-3.5" />
             Stop speaking
@@ -153,7 +161,7 @@ export function VoiceControl({
             variant="outline"
             size="sm"
             onClick={onDisconnect}
-            className="bg-card shadow-xs"
+            className="rounded-xl border-border/40 bg-card/70 shadow-xs hover:bg-secondary"
           >
             <PhoneOff className="size-3.5" />
             End
@@ -162,7 +170,7 @@ export function VoiceControl({
       )}
 
       <p className="flex items-center gap-2 text-[11px] text-muted-foreground">
-        <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
+        <span className="size-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" aria-hidden="true" />
         Your standard API key stays on the server
       </p>
     </div>

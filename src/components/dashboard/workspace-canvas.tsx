@@ -22,18 +22,18 @@ const compactNumber = new Intl.NumberFormat("en", {
 export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
   return (
     <section
-      className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[calc(var(--radius)+0.5rem)] bg-card shadow-lg"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl glass-panel"
       aria-label="Live workspace"
     >
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-5 sm:px-6">
         <div>
           <div className="flex items-center gap-2">
-            <p className="font-serif text-xl font-semibold tracking-tight">
+            <p className="font-sans text-xl font-semibold tracking-tight">
               Research desk
             </p>
             <Badge
-              variant="secondary"
-              className="rounded-full border-0 text-[10px] shadow-xs"
+              variant="outline"
+              className="rounded-full border-border/50 bg-card/60 text-[10px] shadow-xs"
             >
               Demo evidence
             </Badge>
@@ -46,7 +46,7 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
           variant="outline"
           size="sm"
           disabled
-          className="bg-card shadow-xs"
+          className="rounded-xl border-border/50 bg-card/60 shadow-xs"
         >
           Brief preview
           <ArrowUpRight className="size-3.5" />
@@ -54,15 +54,18 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
-        <div className="space-y-7 px-5 pb-6 pt-2 sm:px-6">
+        <div className="space-y-8 px-5 pb-6 pt-2 sm:px-6">
+          {/* Section header */}
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
                 What is moving
               </p>
               <h2 className="mt-1 text-sm font-semibold">Growth signals</h2>
             </div>
-            <Radar className="size-4 text-primary" aria-hidden="true" />
+            <div className="grid size-9 place-items-center rounded-2xl bg-secondary/70 text-primary shadow-sm">
+              <Radar className="size-4" aria-hidden="true" />
+            </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {snapshot.signals.map((signal, index) => {
@@ -71,14 +74,15 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
               return (
                 <Card
                   key={signal.label}
-                  className="gap-3 border-0 bg-secondary/70 py-4 shadow-sm"
+                  className="group relative gap-3 overflow-hidden border-0 bg-gradient-to-b from-card to-secondary/80 py-4 shadow-md transition-all hover:shadow-lg"
                 >
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/80 via-[#8b5cf6] to-primary/40 opacity-0 transition-opacity group-hover:opacity-100" />
                   <CardContent className="px-4">
                     <div className="mb-4 flex items-center justify-between">
-                      <div className="grid size-8 place-items-center rounded-xl bg-card text-primary shadow-xs">
+                      <div className="grid size-9 place-items-center rounded-xl bg-secondary text-primary shadow-sm">
                         <Icon className="size-4" />
                       </div>
-                      <span className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                         Signal
                       </span>
                     </div>
@@ -95,7 +99,9 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
             })}
           </div>
 
-          <Card className="gap-0 overflow-hidden border-0 bg-secondary/55 py-0 shadow-md">
+          {/* Outliers */}
+          <Card className="relative gap-0 overflow-hidden border-0 bg-gradient-to-b from-card to-secondary/80 py-0 shadow-lg">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/60 via-[#8b5cf6] to-primary/30" />
             <CardHeader className="flex-row items-center justify-between py-5">
               <div>
                 <CardTitle className="text-sm">Competitor outliers</CardTitle>
@@ -103,15 +109,15 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
                   Videos performing above each channel&apos;s baseline.
                 </p>
               </div>
-              <div className="grid size-9 place-items-center rounded-2xl bg-card text-primary shadow-xs">
+              <div className="grid size-9 place-items-center rounded-2xl bg-secondary/70 text-primary shadow-sm">
                 <TrendingUp className="size-4" />
               </div>
             </CardHeader>
             <CardContent className="p-0">
               {snapshot.outliers.map((video, index) => (
                 <div key={video.id}>
-                  {index > 0 && <Separator className="bg-border/70" />}
-                  <div className="grid grid-cols-[1fr_auto] gap-4 px-5 py-4 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+                  {index > 0 && <Separator className="bg-border/60" />}
+                  <div className="grid grid-cols-[1fr_auto] gap-4 px-5 py-4 transition-colors hover:bg-secondary/40 sm:grid-cols-[1fr_auto_auto] sm:items-center">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">
                         {video.title}
@@ -120,15 +126,15 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
                         {video.channel}
                       </p>
                     </div>
-                    <div className="text-right sm:min-w-20">
+                    <div className="text-right sm:min-w-24">
                       <p className="text-sm font-semibold">
                         {compactNumber.format(video.views)}
                       </p>
-                      <p className="text-[10px] uppercase text-muted-foreground">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
                         views
                       </p>
                     </div>
-                    <Badge className="col-span-2 justify-self-start rounded-full shadow-xs sm:col-span-1 sm:justify-self-auto">
+                    <Badge className="col-span-2 justify-self-start rounded-full border-0 bg-gradient-to-r from-primary to-[#7c3aed] text-primary-foreground shadow-sm sm:col-span-1 sm:justify-self-auto">
                       {video.multiplier.toFixed(1)}× outlier
                     </Badge>
                   </div>
@@ -137,11 +143,12 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
             </CardContent>
           </Card>
 
+          {/* Ideas */}
           <div>
             <div className="mb-4 flex items-end justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <Lightbulb className="size-4" />
+                  <Lightbulb className="size-4 text-primary" />
                   <h2 className="text-sm font-semibold">Ideas worth testing</h2>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -149,17 +156,18 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
                 </p>
               </div>
             </div>
-            <div className="grid gap-3 xl:grid-cols-2">
+            <div className="grid gap-4 xl:grid-cols-2">
               {snapshot.ideas.map((idea) => (
                 <Card
                   key={idea.id}
-                  className="gap-4 border-0 bg-accent/70 shadow-md"
+                  className="group relative gap-4 overflow-hidden border-0 bg-gradient-to-br from-accent/60 to-accent/30 shadow-md transition-all hover:shadow-lg"
                 >
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#f59e0b] via-[#fbbf24] to-[#d97706] opacity-80" />
                   <CardHeader>
                     <div className="mb-2 flex items-center justify-between">
                       <Badge
                         variant="outline"
-                        className="rounded-full bg-card shadow-xs"
+                        className="rounded-full border-border/50 bg-card/60 px-2.5 text-xs shadow-xs"
                       >
                         Score {idea.score}
                       </Badge>
@@ -168,6 +176,7 @@ export function WorkspaceCanvas({ snapshot }: { snapshot: DashboardSnapshot }) {
                         size="icon"
                         disabled
                         aria-label="Save idea preview"
+                        className="rounded-full hover:bg-card/50"
                       >
                         <Bookmark className="size-4" />
                       </Button>

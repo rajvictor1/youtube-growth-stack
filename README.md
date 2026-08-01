@@ -219,4 +219,4 @@ Do not commit credentials, `.env.local`, generated browser artifacts, private at
 
 ## License
 
-Released under the [MIT License](LICENSE). Copyright (c) 2026 Harshit Wadhiparty.
+Copyright (c) 2026 Rajesh Kumar. This project is an adaptation of prior work; the original MIT license and its notice are preserved above.
