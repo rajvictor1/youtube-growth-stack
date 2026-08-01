@@ -1,14 +1,12 @@
 import { z } from "zod";
 
-const youtubeUrlSchema = z
-  .url()
-  .refine(
-    (url) => {
-      const hostname = new URL(url).hostname;
-      return hostname === "youtube.com" || hostname.endsWith(".youtube.com");
-    },
-    { message: "Direct URLs must use a youtube.com host." },
-  );
+const youtubeUrlSchema = z.url().refine(
+  (url) => {
+    const hostname = new URL(url).hostname;
+    return hostname === "youtube.com" || hostname.endsWith(".youtube.com");
+  },
+  { message: "Direct URLs must use a youtube.com host." },
+);
 
 export const apifyYouTubeActorInputSchema = z
   .object({
@@ -108,6 +106,32 @@ export const apifyYouTubeDatasetItemSchema = z
   })
   .loose();
 
+export const apifyYouTubeRunReferenceSchema = z
+  .object({
+    runId: z.string().min(1),
+    datasetId: z.string().min(1),
+  })
+  .strict();
+
+export const apifyYouTubeExecutionFailureCodeSchema = z.enum([
+  "INVALID_INPUT",
+  "CONFIGURATION_ERROR",
+  "ACTOR_RUN_FAILED",
+  "PROVIDER_ERROR",
+  "INVALID_DATASET",
+]);
+
+export const apifyYouTubeExecutionFailureSchema = z
+  .object({
+    code: apifyYouTubeExecutionFailureCodeSchema,
+    message: z.string().min(1),
+    retryable: z.boolean(),
+    runId: z.string().min(1).optional(),
+    datasetId: z.string().min(1).optional(),
+    actorStatus: z.string().min(1).optional(),
+  })
+  .strict();
+
 export type ApifyYouTubeActorInput = z.input<
   typeof apifyYouTubeActorInputSchema
 >;
@@ -116,4 +140,13 @@ export type ParsedApifyYouTubeActorInput = z.output<
 >;
 export type ApifyYouTubeDatasetItem = z.infer<
   typeof apifyYouTubeDatasetItemSchema
+>;
+export type ApifyYouTubeRunReference = z.infer<
+  typeof apifyYouTubeRunReferenceSchema
+>;
+export type ApifyYouTubeExecutionFailureCode = z.infer<
+  typeof apifyYouTubeExecutionFailureCodeSchema
+>;
+export type ApifyYouTubeExecutionFailure = z.infer<
+  typeof apifyYouTubeExecutionFailureSchema
 >;

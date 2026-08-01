@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   apifyYouTubeActorInputSchema,
   apifyYouTubeDatasetItemSchema,
+  apifyYouTubeExecutionFailureSchema,
+  apifyYouTubeRunReferenceSchema,
 } from "@/lib/contracts/apify";
 
 describe("apifyYouTubeActorInputSchema", () => {
@@ -72,5 +74,28 @@ describe("apifyYouTubeDatasetItemSchema", () => {
     });
 
     expect(result.success).toBe(true);
+  });
+});
+
+describe("Apify durable worker contracts", () => {
+  it("validates persisted resume references", () => {
+    expect(
+      apifyYouTubeRunReferenceSchema.parse({
+        runId: "run-id",
+        datasetId: "dataset-id",
+      }),
+    ).toEqual({ runId: "run-id", datasetId: "dataset-id" });
+  });
+
+  it("validates retryable failures with provider resume metadata", () => {
+    expect(
+      apifyYouTubeExecutionFailureSchema.safeParse({
+        code: "PROVIDER_ERROR",
+        message: "The Apify dataset request failed.",
+        retryable: true,
+        runId: "run-id",
+        datasetId: "dataset-id",
+      }).success,
+    ).toBe(true);
   });
 });
