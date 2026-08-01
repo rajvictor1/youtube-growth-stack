@@ -39,4 +39,31 @@ describe("agentToolRequestSchema", () => {
 
     expect(result.success).toBe(true);
   });
+
+  it("accepts a public web source for supporting research", () => {
+    const result = agentToolRequestSchema.safeParse({
+      action: "research_external_source",
+      payload: { sourceUrl: "https://example.com/creator-report" },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects non-web protocols for external research", () => {
+    const result = agentToolRequestSchema.safeParse({
+      action: "research_external_source",
+      payload: { sourceUrl: "file:///etc/passwd" },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects private-network sources", () => {
+    const result = agentToolRequestSchema.safeParse({
+      action: "research_external_source",
+      payload: { sourceUrl: "http://192.168.1.10/channel-notes" },
+    });
+
+    expect(result.success).toBe(false);
+  });
 });

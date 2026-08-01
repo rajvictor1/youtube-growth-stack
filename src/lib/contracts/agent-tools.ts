@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { apifyYouTubeActorInputSchema } from "@/lib/contracts/apify";
+import { externalResearchSourceInputSchema } from "@/lib/contracts/external-research";
 
 export const getDashboardSnapshotInputSchema = z.object({});
 
@@ -23,6 +24,10 @@ export const agentToolRequestSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("start_competitor_research"),
     payload: startCompetitorResearchInputSchema,
+  }),
+  z.object({
+    action: z.literal("research_external_source"),
+    payload: externalResearchSourceInputSchema,
   }),
   z.object({
     action: z.literal("save_content_idea"),

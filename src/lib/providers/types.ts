@@ -8,9 +8,4 @@ export type NormalizedVideo = {
   sourceUrl: string;
 };
 
-export type ExternalResearchDocument = {
-  sourceUrl: string;
-  title: string | null;
-  markdown: string;
-  provider: "firecrawl";
-};
+export type { ExternalResearchDocument } from "@/lib/contracts/external-research";

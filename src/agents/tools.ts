@@ -6,6 +6,7 @@ import {
   startCompetitorResearchInputSchema,
   type AgentToolRequest,
 } from "@/lib/contracts/agent-tools";
+import { externalResearchSourceInputSchema } from "@/lib/contracts/external-research";
 
 type ToolEvent = {
   action: AgentToolRequest["action"];
@@ -58,6 +59,21 @@ export function createGrowthAgentTools(
           payload,
         });
         onToolEvent?.({ action: "start_competitor_research", result });
+        return JSON.stringify(result);
+      },
+    }),
+    tool({
+      name: "research_external_source",
+      description:
+        "Read one public web page for supporting channel, competitor, or topic research. This uses Firecrawl credits and does not provide authoritative YouTube metrics.",
+      parameters: externalResearchSourceInputSchema,
+      needsApproval: true,
+      execute: async (payload) => {
+        const result = await callToolApi({
+          action: "research_external_source",
+          payload,
+        });
+        onToolEvent?.({ action: "research_external_source", result });
         return JSON.stringify(result);
       },
     }),

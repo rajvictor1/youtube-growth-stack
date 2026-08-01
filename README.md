@@ -24,6 +24,20 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Provider configuration
+
+Copy `.env.example` to `.env.local` and add only the credentials for the
+services you intend to use. `.env.local` is ignored by Git. Provider secrets,
+including `FIRECRAWL_API_KEY`, are server-only and must never use a
+`NEXT_PUBLIC_` prefix.
+
+Firecrawl Cloud has a deliberately narrow role in this product: it turns one
+public web page into clean Markdown and source metadata for supporting channel,
+competitor, or topic research. A scrape may consume Firecrawl credits, so the
+voice tool requires explicit user approval. Firecrawl is not the source for
+YouTube-native channel, video, view, subscriber, or engagement data; use the
+official YouTube API (or explicitly configured Apify enrichment) for those.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Learn More
